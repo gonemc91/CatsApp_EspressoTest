@@ -1,0 +1,94 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
+    id 'androidx.navigation.safeargs.kotlin'
+}
+
+
+android {
+    namespace "com.example.catsonactivity"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.example.nav_components_2_tabs_exercise"
+        minSdk 23
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "com.example.catsonactivity.HiltAndroidTestRunner"
+
+        kapt{
+            arguments{
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures{
+        viewBinding true
+    }
+}
+
+dependencies {
+
+
+    implementation"androidx.core:core-ktx:1.12.0"
+    implementation"androidx.appcompat:appcompat:1.6.1"
+    implementation"com.google.android.material:material:1.10.0"
+    implementation"androidx.constraintlayout:constraintlayout:2.1.4"
+
+    implementation"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    implementation"com.github.javafaker:javafaker:1.0.2"
+
+    implementation"androidx.activity:activity-ktx:1.8.1"
+    implementation"androidx.fragment:fragment-ktx:1.6.2"
+    implementation"androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
+
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
+
+    implementation "com.elveum:element-adapter:0.3.1"
+    implementation "io.coil-kt:coil:2.2.0"
+    /*androidTestImplementation for instrumental tests */
+    androidTestImplementation 'org.hamcrest:hamcrest:2.2'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+    testImplementation "junit:junit:4.13.2"
+    androidTestImplementation "androidx.test.ext:junit:1.1.5"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
+
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'         //recycler view testing
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'         //navigates on activity
+
+    androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'                 //for async code
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"   //for async code
+
+    androidTestImplementation "androidx.navigation:navigation-testing:2.7.5"           //for navigation on nav component
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"   //for mockk hilt module
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"            //for mockk hilt module
+    /*debugImplementation only debug mode*/
+    androidTestImplementation "io.mockk:mockk-android:1.13.1"                                //implement mockk library
+    androidTestImplementation "androidx.fragment:fragment-testing:1.6.2"                     //for navigation on fragment component
+
+}
