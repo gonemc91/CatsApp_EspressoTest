@@ -20,11 +20,7 @@ android {
 
         testInstrumentationRunner "com.example.catsonactivity.HiltAndroidTestRunner"
 
-        kapt{
-            arguments{
-                arg("room.schemaLocation", "$projectDir/schemas")
-            }
-        }
+
 
     }
 
@@ -43,6 +39,11 @@ android {
     }
     buildFeatures{
         viewBinding true
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.md'
+        exclude 'META-INF/LICENSE-notice.md'
     }
 }
 
@@ -70,25 +71,37 @@ dependencies {
 
     implementation "com.elveum:element-adapter:0.3.1"
     implementation "io.coil-kt:coil:2.2.0"
+
     /*androidTestImplementation for instrumental tests */
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "io.mockk:mockk-android:1.13.1"
+
     androidTestImplementation 'org.hamcrest:hamcrest:2.2'
+    androidTestImplementation "androidx.test.ext:junit:1.1.3"
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:rules:1.5.0'
-    testImplementation "junit:junit:4.13.2"
-    androidTestImplementation "androidx.test.ext:junit:1.1.5"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.4.0"
 
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'         //recycler view testing
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'         //navigates on activity
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
+    //recycler view testing
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
+    //navigates on activity
 
-    androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'                 //for async code
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"   //for async code
+    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
+    //for async code
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"
+    //for async code
 
-    androidTestImplementation "androidx.navigation:navigation-testing:2.7.5"           //for navigation on nav component
-    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"   //for mockk hilt module
-    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"            //for mockk hilt module
+    androidTestImplementation "androidx.navigation:navigation-testing:2.5.2"
+    //for navigation on nav component
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+   //for mockk hilt module
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+    //for mockk hilt module
     /*debugImplementation only debug mode*/
-    androidTestImplementation "io.mockk:mockk-android:1.13.1"                                //implement mockk library
-    androidTestImplementation "androidx.fragment:fragment-testing:1.6.2"                     //for navigation on fragment component
+    debugImplementation "io.mockk:mockk-android:1.13.1"
+    //implement mockk library
+    debugImplementation "androidx.fragment:fragment-testing:1.5.3"
+    //for navigation on fragment component
 
 }

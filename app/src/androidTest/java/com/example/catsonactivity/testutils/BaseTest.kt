@@ -14,7 +14,7 @@ import javax.inject.Inject
 /**
  * Base class for all UI tests.
  */
-open class BaseTest {
+open class BaseTest (){
 
 
      //Substitutes MainDispatcher on [UnconfinedTestDispatcher] for coroutine.
@@ -42,7 +42,7 @@ open class BaseTest {
 
     @Before
     open fun setUp(){
-        hiltRule.inject()
+       hiltRule.inject()
     }
 
 }
