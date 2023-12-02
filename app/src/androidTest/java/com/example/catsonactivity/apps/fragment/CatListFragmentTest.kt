@@ -4,6 +4,8 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.example.catsonactivity.R
@@ -31,7 +33,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.hamcrest.Matchers
+import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -69,7 +71,7 @@ class CatListFragmentTest: BaseTest() {
         id = 2,
         name = "Tiger",
         photoUrl = "cat2.jpg",
-        description = "The second cat-",
+        description = "The second cat",
         isFavorite = true
     )
 
@@ -93,30 +95,29 @@ class CatListFragmentTest: BaseTest() {
         // act
         Espresso.onView(ViewMatchers.withId(R.id.catsRecyclerView))
             .perform(scrollToPosition(0))
-            .check(ViewAssertions.matches(atPosition(0, ViewMatchers.withText("Cats: 1 … 2"))))
+            .check(ViewAssertions.matches(atPosition(0, withText("Cats: 1 … 2"))))
 
         // assert
         Espresso.onView(ViewMatchers.withId(R.id.catsRecyclerView))
             .perform(scrollToPosition(1))
-            .check(ViewAssertions.matches(atPosition(1, Matchers.allOf(
-                ViewMatchers.hasDescendant(Matchers.allOf(ViewMatchers.withId(R.id.catNameTextView), ViewMatchers.withText("Lucky"))),
-                ViewMatchers.hasDescendant(Matchers.allOf(ViewMatchers.withId(R.id.catDescriptionTextView), ViewMatchers.withText("The first cat"))),
-                ViewMatchers.hasDescendant(Matchers.allOf(ViewMatchers.withId(R.id.favoriteImageView), withDrawable(R.drawable.ic_favorite_not, R.color.action))),
-                ViewMatchers.hasDescendant(Matchers.allOf(ViewMatchers.withId(R.id.deleteImageView), withDrawable(R.drawable.ic_delete, R.color.action))),
-                ViewMatchers.hasDescendant(Matchers.allOf(ViewMatchers.withId(R.id.catImageView), withDrawable(FakeImageLoader.createDrawable("cat1.jpg")))
-                ))))
-            )
+            .check(ViewAssertions.matches(atPosition(1, allOf(
+                hasDescendant(allOf(ViewMatchers.withId(R.id.catNameTextView), withText("Lucky"))),
+                hasDescendant(allOf(ViewMatchers.withId(R.id.catDescriptionTextView), withText("The first cat"))),
+                hasDescendant(allOf(ViewMatchers.withId(R.id.favoriteImageView), withDrawable(R.drawable.ic_favorite_not, R.color.action))),
+                hasDescendant(allOf(ViewMatchers.withId(R.id.deleteImageView), withDrawable(R.drawable.ic_delete, R.color.action))),
+                hasDescendant(
+                    allOf(ViewMatchers.withId(R.id.catImageView), withDrawable(FakeImageLoader.createDrawable("cat1.jpg")))
+                )))))
 
         Espresso.onView(ViewMatchers.withId(R.id.catsRecyclerView))
             .perform(scrollToPosition(2))
-            .check(ViewAssertions.matches(atPosition(2, Matchers.allOf(
-                ViewMatchers.hasDescendant(Matchers.allOf(ViewMatchers.withId(R.id.catNameTextView), ViewMatchers.withText("Tiger"))),
-                ViewMatchers.hasDescendant(Matchers.allOf(ViewMatchers.withId(R.id.catDescriptionTextView), ViewMatchers.withText("The second cat"))),
-                ViewMatchers.hasDescendant(Matchers.allOf(ViewMatchers.withId(R.id.favoriteImageView), withDrawable(R.drawable.ic_favorite, R.color.highlighted_action))),
-                ViewMatchers.hasDescendant(Matchers.allOf(ViewMatchers.withId(R.id.deleteImageView), withDrawable(R.drawable.ic_delete, R.color.action))),
-                ViewMatchers.hasDescendant(Matchers.allOf(ViewMatchers.withId(R.id.catImageView), withDrawable(FakeImageLoader.createDrawable("cat2.jpg")))
-                ))))
-            )
+            .check(ViewAssertions.matches(atPosition(2, allOf(
+                hasDescendant(allOf(ViewMatchers.withId(R.id.catNameTextView), withText("Tiger"))),
+                hasDescendant(allOf(ViewMatchers.withId(R.id.catDescriptionTextView), withText("The second cat"))),
+                hasDescendant(allOf(ViewMatchers.withId(R.id.favoriteImageView), withDrawable(R.drawable.ic_favorite, R.color.highlighted_action))),
+                hasDescendant(allOf(ViewMatchers.withId(R.id.deleteImageView), withDrawable(R.drawable.ic_delete, R.color.action))),
+                hasDescendant(allOf(ViewMatchers.withId(R.id.catImageView), withDrawable(FakeImageLoader.createDrawable("cat2.jpg")))
+                )))))
 
         Espresso.onView(ViewMatchers.withId(R.id.catsRecyclerView))
             .check(ViewAssertions.matches(withItemsCount(3))) // 1 header + 2 cats
@@ -162,11 +163,13 @@ class CatListFragmentTest: BaseTest() {
     private fun assertFavorite(expectedDrawableRes: Int, expectedTintColorRes: Int? = null) {
         Espresso.onView(ViewMatchers.withId(R.id.catsRecyclerView))
             .perform(scrollToPosition(1))
-            .check(ViewAssertions.matches(atPosition(1, ViewMatchers.hasDescendant(
-                            Matchers.allOf(
+            .check(ViewAssertions.matches(atPosition(1, hasDescendant(
+                            allOf(
                                 ViewMatchers.withId(R.id.favoriteImageView),
                                 withDrawable(expectedDrawableRes, expectedTintColorRes)
-                            )))))
+                            )
+            )
+            )))
     }
 
     @Module

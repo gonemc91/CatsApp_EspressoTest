@@ -1,5 +1,6 @@
-package com.example.catsonactivity.apps.fragment
+package com.example.catsonactivity.apps.navigation
 
+import androidx.navigation.NavController
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
@@ -7,51 +8,45 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.example.catsonactivity.R
-import com.example.catsonactivity.apps.fragments.CatDetailsFragment
-import com.example.catsonactivity.apps.fragments.FragmentRouter
-import com.example.catsonactivity.apps.fragments.di.FragmentRouterModule
+import com.example.catsonactivity.apps.navcomponent.NavCatDetailsFragment
+import com.example.catsonactivity.apps.navcomponent.NavCatDetailsFragmentArgs
+import com.example.catsonactivity.apps.navcomponent.NavCatsListFragment
 import com.example.catsonactivity.di.RepositoriesModule
 import com.example.catsonactivity.model.Cat
 import com.example.catsonactivity.testutils.BaseTest
 import com.example.catsonactivity.testutils.FakeImageLoader
 import com.example.catsonactivity.testutils.espresso.withDrawable
-import com.example.catsonactivity.testutils.launchHiltFragment
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
+import com.example.catsonactivity.testutils.launchNavHiltFragment
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import dagger.hilt.components.SingletonComponent
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
- * Test for app with navigation based on fragment.
+ * Tests for app with navigation based on Nav Component.
  *
- * This class contains tests for [CatDetailsFragment]. Real navigation
- * is replaced by a fake [FragmentRouter] created by Mockk.
- *
+ * This class contain tests fo [NavCatsListFragment]. Real navigation
+ * is replaced by a fake [NavController] created by MockK.
  * The fragment itself is launched in a separate empty activity container by
- * using [launchHiltFragment] method.
+ * using [launchNavHiltFragment] method.
  */
 
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
-@UninstallModules(RepositoriesModule::class, FragmentRouterModule::class)
+@UninstallModules(RepositoriesModule::class)
 @MediumTest
 
-class CatDetailsFragmentTest: BaseTest() {
 
-    @Inject
-    lateinit var fragmentRouter: FragmentRouter
+class NavCatDetailsFragmentTest: BaseTest() {
+
+    @RelaxedMockK
+    lateinit var navController: NavController
 
     private val cat = Cat(
         id = 1,
@@ -61,24 +56,22 @@ class CatDetailsFragmentTest: BaseTest() {
         isFavorite = true
     )
 
-    private val catsFlow = MutableStateFlow(cat)
+    private val catFlow = MutableStateFlow(cat)
 
     private lateinit var scenario: AutoCloseable
 
     @Before
     override fun setUp() {
         super.setUp()
-        every { catsRepository.getCatById(any()) } returns catsFlow
-        scenario = launchHiltFragment {
-            CatDetailsFragment.newInstance(cat.id)
-        }
+        every { catsRepository.getCatById(any()) } returns catFlow
+        val args = NavCatDetailsFragmentArgs(catId = 1L)
+        scenario = launchNavHiltFragment<NavCatDetailsFragment>(navController, args.toBundle())
     }
 
     @After
     fun tearDown(){
         scenario.close()
     }
-
 
     @Test
     fun catIsDisplayed() {
@@ -88,7 +81,14 @@ class CatDetailsFragmentTest: BaseTest() {
         Espresso.onView(ViewMatchers.withId(R.id.catDescriptionTextView))
             .check(ViewAssertions.matches(ViewMatchers.withText("Meow-meow")))
         Espresso.onView(ViewMatchers.withId(R.id.favoriteImageView))
-            .check(ViewAssertions.matches(withDrawable(R.drawable.ic_favorite, R.color.highlighted_action)))
+            .check(
+                ViewAssertions.matches(
+                    withDrawable(
+                        R.drawable.ic_favorite,
+                        R.color.highlighted_action
+                    )
+                )
+            )
         Espresso.onView(ViewMatchers.withId(R.id.catImageView))
             .check(ViewAssertions.matches(withDrawable(FakeImageLoader.createDrawable(cat.photoUrl))))
     }
@@ -100,7 +100,7 @@ class CatDetailsFragmentTest: BaseTest() {
         every { catsRepository.toggleIsFavorite(any()) } answers {
             val cat = firstArg<Cat>()
             val newCat = cat.copy(isFavorite = !cat.isFavorite)
-            catsFlow.value = newCat
+            catFlow.value = newCat
         }
 
         //act 1 - turn off favorite flag
@@ -126,19 +126,7 @@ class CatDetailsFragmentTest: BaseTest() {
     @Test
     fun clickOnBackFinishedActivity(){
         Espresso.onView(ViewMatchers.withId(R.id.goBackButton)).perform(ViewActions.click())
-        verify(exactly = 1) { fragmentRouter.goBack() }
+        verify(exactly = 1) { navController.popBackStack() }
     }
 
-
-
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    class FakeFragmentRouterModule{
-        @Provides
-        @Singleton
-        fun bindRouter(): FragmentRouter{
-            return mockk(relaxed = true)
-        }
-    }
 }
