@@ -45,6 +45,12 @@ android {
         exclude 'META-INF/LICENSE.md'
         exclude 'META-INF/LICENSE-notice.md'
     }
+//    Access android resources in android test
+    testOptions{
+        unitTests{
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -103,5 +109,6 @@ dependencies {
     //implement mockk library
     debugImplementation "androidx.fragment:fragment-testing:1.5.3"
     //for navigation on fragment component
+
 
 }

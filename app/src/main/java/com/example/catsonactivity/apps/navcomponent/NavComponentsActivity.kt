@@ -14,7 +14,7 @@ class NavComponentActivity : AppCompatActivity() {
     private val navController: NavController
         get() {
             val fragment = supportFragmentManager
-                .findFragmentById(R.id.fragmentContainer) as NavHostFragment
+                .findFragmentById(R.id.fragmentContainerView) as NavHostFragment
             return fragment.navController
         }
 
